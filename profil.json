@@ -25,5 +25,6 @@
   "contact": [
     ["Studio", "Koroz"],
     ["Site", "koroz.fr (bientôt en ligne)"]
-  ]
+  ],
+  "effets": ["typing", "glitch"]
 }

@@ -113,7 +113,7 @@ def build_lines(stats):
     return lines
 
 
-def render(stats):
+def render(stats, fx=(), out_name="terminal.svg"):
     ascii_path = ROOT / "assets" / "portrait.txt"
     art = ascii_path.read_text(encoding="utf-8").rstrip("\n").split("\n") if ascii_path.exists() else []
     lines = build_lines(stats)
@@ -136,11 +136,17 @@ def render(stats):
         "@keyframes in{from{opacity:0}to{opacity:1}}"
         ".a{opacity:0;animation:in .25s ease-out forwards}"
         "@keyframes blink{50%{opacity:0}}.c{animation:blink 1s steps(1) infinite}"
+        "@keyframes type{from{transform:translateX(0)}to{transform:translateX(var(--w))}}"
+        ".t{animation:type var(--d) steps(var(--n)) forwards}"
+        "@keyframes glitch{0%,88%,100%{transform:none;opacity:1}89%{transform:translate(5px,0) skewX(-8deg);opacity:.75}"
+        "90%{transform:translate(-4px,1px);opacity:1}91%{transform:translate(2px,0) skewX(5deg);opacity:.6}92%{transform:none}"
+        "95%{opacity:1}95.5%{opacity:.4}96%{opacity:1}}"
+        ".g{animation:glitch 4s steps(1) 2s infinite}"
         "</style>",
         f'<rect x=".5" y=".5" width="{width - 1}" height="{height - 1}" rx="10" fill="{BG}" stroke="{BORDER}"/>',
     ]
     # Portrait : apparition ligne par ligne, du haut vers le bas
-    out.append(f'<g font-size="{AFS}" fill="{YELLOW}">')
+    out.append(f'<g font-size="{AFS}" fill="{YELLOW}"{' class="g"' if "glitch" in fx else ""}>')
     for i, row in enumerate(art):
         if row.strip("\u2800 "):
             out.append(
@@ -148,21 +154,42 @@ def render(stats):
                 f'textLength="{len(row) * ACW:.1f}" lengthAdjust="spacingAndGlyphs" xml:space="preserve">{escape(row)}</text>'
             )
     out.append("</g>")
+    if "glitch" in fx and art:  # lignes de balayage façon écran CRT
+        out.append(
+            '<defs><pattern id="scan" width="4" height="3" patternUnits="userSpaceOnUse">'
+            f'<rect width="4" height="1" fill="{BG}" opacity=".55"/></pattern></defs>'
+            f'<rect x="{pad}" y="{ay:.1f}" width="{art_w:.1f}" height="{art_h + ALH:.1f}" fill="url(#scan)"/>'
+        )
     # Bloc texte
     out.append(f'<g font-size="{FS}">')
-    delay0 = len(art) * 0.03 * 0.5
+    typing = "typing" in fx
+    delay0 = 0.3 if typing else len(art) * 0.03 * 0.5
+    covers, t = [], delay0
     for i, parts in enumerate(lines):
         spans = "".join(f'<tspan fill="{c}">{escape(t)}</tspan>' for t, c in parts)
+        y = ty + i * LH
+        cls = "l" if typing else "l a"
+        style = "" if typing else f' style="animation-delay:{delay0 + i * 0.05:.2f}s"'
+        out.append(f'<text class="{cls}"{style} x="{tx:.1f}" y="{y:.1f}" xml:space="preserve">{spans}</text>')
+        if typing:  # un cache noir qui glisse caractère par caractère
+            n = max(1, len("".join(p[0] for p in parts).rstrip()))
+            d = 0.04 + n * 0.0025
+            covers.append(
+                f'<rect class="t" x="{tx - 1:.1f}" y="{y - FS:.1f}" width="{W * CW + 2:.1f}" height="{LH:.1f}" fill="{BG}" '
+                f'style="--w:{W * CW + 2:.1f}px;--n:{n};--d:{d:.2f}s;animation-delay:{t:.2f}s"/>'
+            )
+            t += d
+    if covers:
         out.append(
-            f'<text class="l a" style="animation-delay:{delay0 + i * 0.05:.2f}s" x="{tx:.1f}" y="{ty + i * LH:.1f}" '
-            f'xml:space="preserve">{spans}</text>'
+            f'<clipPath id="txt"><rect x="{tx - 1:.1f}" y="0" width="{W * CW + 2:.1f}" height="{height}"/></clipPath>'
+            f'<g clip-path="url(#txt)">{"".join(covers)}</g>'
         )
     py = ty + (len(lines) + 1) * LH
     out.append(
         f'<text x="{tx:.1f}" y="{py:.1f}" fill="{YELLOW}">&gt; <tspan class="c">█</tspan></text>'
     )
     out.append("</g></svg>")
-    (ROOT / "assets" / "terminal.svg").write_text("\n".join(out), encoding="utf-8")
+    (ROOT / "assets" / out_name).write_text("\n".join(out), encoding="utf-8")
 
 
 if __name__ == "__main__":
@@ -172,5 +199,7 @@ if __name__ == "__main__":
         if demo
         else fetch_stats(CFG["user"])
     )
-    render(stats)
+    render(stats, CFG.get("effets", []))
+    if "--apercu-effets" in sys.argv:
+        render(stats, ("typing", "glitch"), "terminal-effets.svg")
     print("assets/terminal.svg généré", "(démo)" if demo else "")
