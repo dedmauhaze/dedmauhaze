@@ -26,5 +26,5 @@
     ["Studio", "Koroz"],
     ["Site", "koroz.fr (bientôt en ligne)"]
   ],
-  "effets": ["typing", "glitch"]
+  "effets": ["typing", "glitch", "egaliseur"]
 }

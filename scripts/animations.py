@@ -208,8 +208,8 @@ if __name__ == "__main__":
     pacman(weeks)
     if "--vaisseau" in sys.argv:
         shooter(weeks)
-    equalizer()
-    if "--303" in sys.argv:  # onde acid et séquenceur (retirés du profil, gardés en option)
+    if "--303" in sys.argv:  # égaliseur désormais intégré au cadre terminal
+        equalizer()  # onde acid et séquenceur (retirés du profil, gardés en option)
         acid_wave()
         sequencer()
     print("animations générées dans assets/")

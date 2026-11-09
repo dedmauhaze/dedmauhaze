@@ -8,6 +8,7 @@ import calendar
 import datetime as dt
 import json
 import os
+import random
 import sys
 import urllib.request
 from pathlib import Path
@@ -113,6 +114,27 @@ def build_lines(stats):
     return lines
 
 
+def equalizer(x0, y0, w, h, bars=56, seed=3):
+    """Barres d'égaliseur animées, posées en bas du cadre."""
+    rnd = random.Random(seed)
+    bw = w / bars
+    css, rects = [], []
+    for i in range(bars):
+        d = rnd.uniform(0.7, 1.6)
+        lo, hi = rnd.uniform(0.08, 0.3), rnd.uniform(0.55, 1)
+        mid = rnd.uniform(lo, hi)
+        css.append(f"@keyframes b{i}{{0%,100%{{transform:scaleY({lo:.2f})}}35%{{transform:scaleY({hi:.2f})}}70%{{transform:scaleY({mid:.2f})}}}}")
+        rects.append(
+            f'<rect x="{x0 + i * bw + 1.5:.1f}" y="{y0}" width="{bw - 3:.1f}" height="{h}" rx="2" fill="url(#eq)" '
+            f'style="transform-origin:0 {y0 + h}px;transform-box:view-box;animation:b{i} {d:.2f}s ease-in-out {-rnd.uniform(0, d):.2f}s infinite"/>'
+        )
+    return (
+        f'<defs><linearGradient id="eq" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#7a6a0a"/>'
+        f'<stop offset=".7" stop-color="{YELLOW}"/><stop offset="1" stop-color="#FFF3B0"/></linearGradient></defs>'
+        f"<style>{''.join(css)}</style>" + "".join(rects)
+    )
+
+
 def render(stats, fx=(), out_name="terminal.svg"):
     ascii_path = ROOT / "assets" / "portrait.txt"
     art = ascii_path.read_text(encoding="utf-8").rstrip("\n").split("\n") if ascii_path.exists() else []
@@ -124,9 +146,11 @@ def render(stats, fx=(), out_name="terminal.svg"):
     tx = pad + art_w + (32 if art else 0)
     text_h = (len(lines) + 2) * LH
     width = round(tx + W * CW + pad)
-    height = round(max(art_h, text_h) + 2 * pad)
-    ay = pad + (height - 2 * pad - art_h) / 2
-    ty = pad + (height - 2 * pad - text_h) / 2 + FS
+    content_h = max(art_h, text_h)
+    eq_h = 70 if "egaliseur" in fx else 0
+    height = round(content_h + 2 * pad + (eq_h + 20 if eq_h else 0))
+    ay = pad + (content_h - art_h) / 2
+    ty = pad + (content_h - text_h) / 2 + FS
 
     out = [
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" '
@@ -188,7 +212,10 @@ def render(stats, fx=(), out_name="terminal.svg"):
     out.append(
         f'<text x="{tx:.1f}" y="{py:.1f}" fill="{YELLOW}">&gt; <tspan class="c">█</tspan></text>'
     )
-    out.append("</g></svg>")
+    out.append("</g>")
+    if eq_h:
+        out.append(equalizer(pad, height - pad - eq_h, width - 2 * pad, eq_h))
+    out.append("</svg>")
     (ROOT / "assets" / out_name).write_text("\n".join(out), encoding="utf-8")
 
 
