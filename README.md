@@ -1,16 +1,13 @@
-## Hi there 👋
+<div align="center">
 
-<!--
-**dedmauhaze/dedmauhaze** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
+<img src="./assets/terminal.svg" alt="opie@koroz : développeur web et audio. Sites vitrines sur mesure, plugins VST pour FL Studio, modding GTA V et Red Dead Redemption." width="100%">
 
-Here are some ideas to get you started:
+<br><br>
 
-- 🔭 I’m currently working on ...
-- 🌱 I’m currently learning ...
-- 👯 I’m looking to collaborate on ...
-- 🤔 I’m looking for help with ...
-- 💬 Ask me about ...
-- 📫 How to reach me: ...
-- 😄 Pronouns: ...
-- ⚡ Fun fact: ...
--->
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/dedmauhaze/dedmauhaze/output/contributions-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/dedmauhaze/dedmauhaze/output/contributions.svg">
+  <img alt="Grille de contributions animée" src="https://raw.githubusercontent.com/dedmauhaze/dedmauhaze/output/contributions-dark.svg" width="100%">
+</picture>
+
+</div>

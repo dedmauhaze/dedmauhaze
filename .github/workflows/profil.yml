@@ -1,0 +1,52 @@
+name: Profil
+
+on:
+  schedule:
+    - cron: "17 4 * * *" # tous les jours vers 5 h (heure de Paris)
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [profil.json, assets/portrait.txt, scripts/terminal.py]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: profil
+  cancel-in-progress: true
+
+jobs:
+  terminal:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Stats GitHub → assets/terminal.svg
+        run: python scripts/terminal.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Commit si changement
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/terminal.svg
+          git diff --cached --quiet || (git commit -m "Mise à jour des stats" && git push)
+
+  contributions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: Platane/snk@v3
+        with:
+          github_user_name: ${{ github.repository_owner }}
+          outputs: |
+            dist/contributions.svg?palette=github-light&color_snake=#c9a400&color_dots=#ebedf0,#fff3b0,#ffe066,#ffd60a,#c9a400
+            dist/contributions-dark.svg?palette=github-dark&color_snake=#FFD60A&color_dots=#161616,#3d3505,#7a6a0a,#c9a400,#FFD60A
+      - uses: crazy-max/ghaction-github-pages@v4
+        with:
+          target_branch: output
+          build_dir: dist
+          commit_message: Grille de contributions
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

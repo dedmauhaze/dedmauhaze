@@ -1,0 +1,29 @@
+{
+  "user": "dedmauhaze",
+  "prompt": "opie@koroz",
+  "birthdate": "",
+  "sections": [
+    [
+      ["OS", "Windows, Linux"],
+      ["Host", "France"],
+      ["Kernel", "Développeur web & audio"],
+      ["IDE", "VS Code"],
+      ["DAW", "FL Studio"]
+    ],
+    [
+      ["Langages.Web", "Astro, TypeScript, JavaScript, HTML, CSS"],
+      ["Langages.Audio", "Rust (nih-plug), VST3, CLAP"],
+      ["Langages.Script", "Lua"],
+      ["Langages.Parlés", "Français"]
+    ],
+    [
+      ["Focus.Web", "Sites vitrines sur mesure"],
+      ["Focus.Audio", "Plugins VST pour FL Studio"],
+      ["Focus.Modding", "GTA V, Red Dead Redemption"]
+    ]
+  ],
+  "contact": [
+    ["Studio", "Koroz"],
+    ["Site", "koroz.fr (bientôt en ligne)"]
+  ]
+}

@@ -1,0 +1,6 @@
+# Photos sources (jamais publiées)
+*.jpg
+*.jpeg
+*.png
+!assets/*.png
+__pycache__/
