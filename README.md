@@ -6,8 +6,4 @@
 
 <img src="./assets/anim-pacman.svg" alt="Grille de contributions mangée par Pac-Man" width="100%">
 
-<img src="./assets/anim-onde-acid.svg" alt="Onde acid animée, clin d'œil au VST 303 - Orbite" width="100%">
-
-<img src="./assets/anim-sequenceur.svg" alt="Séquenceur 16 pas animé" width="100%">
-
 </div>

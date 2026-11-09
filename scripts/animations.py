@@ -208,7 +208,8 @@ if __name__ == "__main__":
     pacman(weeks)
     if "--vaisseau" in sys.argv:
         shooter(weeks)
-    acid_wave()
-    sequencer()
     equalizer()
+    if "--303" in sys.argv:  # onde acid et séquenceur (retirés du profil, gardés en option)
+        acid_wave()
+        sequencer()
     print("animations générées dans assets/")
